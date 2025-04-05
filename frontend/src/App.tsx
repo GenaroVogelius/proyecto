@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Button from './components/Button/Button';
 import Pin from './components/Pin/Pin';
 import Typewriter from './components/TypeWritter/TypeWritter';
+import Consumer from './components/Consumer/Consumer';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -23,6 +24,8 @@ function App() {
         <Pin text="React 👍">
           <h1>hi</h1>
         </Pin>
+
+        <Consumer roomName={1} />
 
         <Typewriter words={words} />
         <p className="my-10">
