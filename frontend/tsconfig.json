@@ -65,8 +65,14 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+
+    // Path alias configuration
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["./lib/**/*.ts", "./lib/**/*.tsx"],
-  "exclude": ["./lib/**/*.stories.*"]
+  "include": ["src/**/*.ts", "src/**/*.tsx", "lib/**/*.ts", "lib/**/*.tsx"],
+  "exclude": ["lib/**/*.stories.*"]
 }
