@@ -1,0 +1,87 @@
+
+
+services:
+  web:
+    build: 
+      context: .
+      dockerfile: Dockerfile.local
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/workspace
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.dev
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydb
+      - POSTGRES_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - app_interna
+    restart: always
+
+  daphne:
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    command: daphne -b 0.0.0.0 -p 8001 backend.asgi:application
+    volumes:
+      - .:/workspace
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env.dev
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydb
+      - POSTGRES_HOST=db
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - app_interna
+    restart: always
+
+  db:
+    image: postgres:15
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=mydb
+    ports:
+      - "5432:5432"
+    networks:
+      - app_interna
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app_interna
+    restart: always
+
+networks:
+  app_interna: 
+    driver: bridge
+
+volumes:
+  postgres_data:
+    name: proyecto_postgres_data

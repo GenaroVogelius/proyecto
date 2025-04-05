@@ -1,0 +1,43 @@
+# pull official base image
+FROM python:3.11.4-slim-buster
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV DEBIAN_FRONTEND noninteractive
+
+# install system dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    netcat \
+    pkg-config \
+    libcairo2-dev \
+    libgirepository1.0-dev \
+    build-essential \
+    gcc \
+    curl \
+    git \
+    redis-tools \
+    postgresql-client \
+    postgresql-server-dev-all \
+    python3-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# set work directory
+WORKDIR /workspace
+
+# install dependencies
+RUN pip install --upgrade pip
+COPY ./backend/requirements.txt .
+RUN pip install -r requirements.txt
+
+# copy entrypoint.sh and set permissions
+COPY ./entrypoint.sh .
+RUN chmod 755 /workspace/entrypoint.sh && \
+    sed -i 's/\r$//' /workspace/entrypoint.sh && \
+    # Double check permissions and ownership
+    chown root:root /workspace/entrypoint.sh
+
+# set entrypoint with full path
+ENTRYPOINT ["sh", "/workspace/entrypoint.sh"]

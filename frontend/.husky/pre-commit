@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+
+cd frontend
+COMMIT_MSG=$(cat "$(git rev-parse --git-dir)/COMMIT_EDITMSG")
+
+# Verifica si el mensaje contiene "feature" o "fix" (case-insensitive)
+if echo "$COMMIT_MSG" | grep -qiE "feature|fix"; then
+  echo "✅ Commit contiene 'feature' o 'fix' → Ejecutando tests..."
+  npm test || {
+    echo "❌ Tests fallaron. Commit abortado.";
+    exit 1;
+  }
+else
+  echo "⏭️ Commit NO contiene 'feature' ni 'fix' → Saltando tests."
+fi
