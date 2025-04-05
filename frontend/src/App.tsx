@@ -1,20 +1,20 @@
-import React, { useState } from "react";
+import { useState } from 'react';
 
-import Button from "./components/Button/Button";
-import Pin from "./components/Pin/Pin";
-import Typewriter from "./components/TypeWritter/TypeWritter";
+import Button from './components/Button/Button';
+import Pin from './components/Pin/Pin';
+import Typewriter from './components/TypeWritter/TypeWritter';
 
 function App() {
   const [count, setCount] = useState(0);
 
   const words = [
-    { text: "Vite", className: "text-[#a95eff]" },
-    { text: " + " },
-    { text: "React", className: "text-[#61dafb]" },
-    { text: " + " },
-    { text: "Tailwindcss", className: "text-[#0ea5e9]" },
-    { text: " + " },
-    { text: "Framer Motion", className: "text-[#ff57c8]" },
+    { text: 'Vite', className: 'text-[#a95eff]' },
+    { text: ' + ' },
+    { text: 'React', className: 'text-[#61dafb]' },
+    { text: ' + ' },
+    { text: 'Tailwindcss', className: 'text-[#0ea5e9]' },
+    { text: ' + ' },
+    { text: 'Framer Motion', className: 'text-[#ff57c8]' },
   ];
 
   return (
@@ -26,13 +26,10 @@ function App() {
 
         <Typewriter words={words} />
         <p className="my-10">
-          <Button onTap={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </Button>
+          <Button onTap={() => setCount((count) => count + 1)}>count is: {count}</Button>
         </p>
         <p>
-          Edit <code className="text-[#8d96a7]">App.tsx</code> and save to test
-          HMR updates.
+          Edit <code className="text-[#8d96a7]">App.tsx</code> and save to test HMR updates.
         </p>
         <p className="mt-3 flex gap-3 text-center text-[#8d96a7]">
           <a
@@ -43,7 +40,7 @@ function App() {
           >
             Learn React
           </a>
-          {" | "}
+          {' | '}
           <a
             className="text-[#61dafb] transition-all hover:text-blue-500"
             href="https://vitejs.dev/guide/"
@@ -52,7 +49,7 @@ function App() {
           >
             Vite Docs
           </a>
-          {" | "}
+          {' | '}
           <a
             className="text-[#61dafb] transition-all hover:text-blue-500"
             href="https://tailwindcss.com/docs/installation"
@@ -61,7 +58,7 @@ function App() {
           >
             Tailwindcss Docs
           </a>
-          {" | "}
+          {' | '}
           <a
             className="text-[#61dafb] transition-all hover:text-blue-500"
             href="https://www.framer.com/motion/"

@@ -1,4 +1,25 @@
 #!/usr/bin/env sh
 
-cd "$(dirname "$0")/.."
-npx commitlint --edit ${1}
+# Store the absolute path of the commit message file
+COMMIT_MSG_FILE=$(realpath "$1")
+
+# Change to the frontend directory
+cd frontend
+
+# Run commitlint first
+npx commitlint --edit "$COMMIT_MSG_FILE" || exit 1
+
+# Get the commit message
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Check if commit type is feat or fix
+if echo "$COMMIT_MSG" | grep -qE "^(feat|fix):"; then
+  echo "💡 Commit type is feat/fix → Running tests..."
+  npm test || {
+    echo "❌ Tests failed. Commit aborted."
+    exit 1
+  }
+  echo "✅ Tests passed successfully!"
+else
+  echo "ℹ️ Commit type is not feat/fix → Skipping tests."
+fi
