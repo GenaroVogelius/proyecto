@@ -22,7 +22,7 @@ Este es un proyecto que utiliza una arquitectura moderna con Django en el backen
 
 1. Clona el repositorio:
 ```bash
-git clone [URL_DEL_REPOSITORIO]
+git clone https://github.com/GenaroVogelius/proyecto
 cd proyecto
 ```
 
@@ -35,7 +35,7 @@ docker-compose -f docker-compose-local.yml up --build
 
 4. Ejecuta el frontend en un navegador:
 ```bash
-cd proyecto
+cd frontend
 npm install
 npm run dev
 ```
