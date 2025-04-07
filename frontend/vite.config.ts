@@ -9,7 +9,11 @@ import { peerDependencies } from './package.json';
 export default defineConfig({
   plugins: [
     react(),
-    dts({ rollupTypes: true }), // Output .d.ts files
+    dts({
+      rollupTypes: true,
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      exclude: ['src/**/*.stories.tsx', 'src/**/*.test.tsx'],
+    }),
   ],
   resolve: {
     alias: {
@@ -20,18 +24,22 @@ export default defineConfig({
     target: 'esnext',
     minify: false,
     lib: {
-      entry: resolve(__dirname, join('lib', 'index.ts')),
+      entry: resolve(__dirname, 'src/index.ts'),
       fileName: 'index',
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      // Exclude peer dependencies from the bundle to reduce bundle size
       external: ['react/jsx-runtime', ...Object.keys(peerDependencies)],
+      output: {
+        globals: {
+          react: 'React',
+        },
+      },
     },
   },
   test: {
     environment: 'jsdom',
-    setupFiles: './lib/test/setup.ts',
+    setupFiles: './src/test/setup.ts',
     coverage: {
       all: false,
       enabled: true,

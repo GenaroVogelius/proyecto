@@ -1,42 +1,57 @@
 import React, { useRef, useState } from 'react';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import Button from './Button/Button';
+import { useOrderBookStore } from '../../store/orderBookStore';
 
 interface ChatProps {
   roomName: number;
 }
 
-const Chat: React.FC<ChatProps> = ({ roomName }) => {
-  const [messages, setMessages] = useState<string[]>([]);
-  const [input, setInput] = useState('');
+const Consumer: React.FC<ChatProps> = ({ roomName }) => {
   const [isConnected, setIsConnected] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const socketRef = useRef<ReconnectingWebSocket | null>(null);
+  const updateOrderBook = useOrderBookStore((state) => state.updateOrderBook);
 
   const connectWebSocket = () => {
-    if (socketRef.current) return; // Already connected
+    if (socketRef.current || isConnecting) return; // Ya conectado o conectando
+
+    setIsConnecting(true);
 
     const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-
-    const wsUrl = `${wsProtocol}://localhost:8000/ws/chat/${roomName}/`;
+    const wsUrl = `${wsProtocol}://localhost:8000/ws/binance/${roomName}/`;
 
     const socket = new ReconnectingWebSocket(wsUrl);
 
     socket.onopen = () => {
       console.log('✅ WebSocket connected');
       setIsConnected(true);
+      setIsConnecting(false);
     };
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      setMessages((prev) => [...prev, data.message]);
+      console.log('📩 Message received:', data);
+      if (data.type === 'orderbook_update') {
+        // Actualizamos el store con los nuevos datos del orderbook
+        updateOrderBook({
+          bids: data.top_bid || [],
+          asks: data.top_ask || []
+        });
+      }
     };
 
     socket.onerror = (error) => {
       console.error('❌ WebSocket error:', error);
+      setIsConnected(false);
+      setIsConnecting(false);
     };
 
     socket.onclose = () => {
       console.log('🔌 WebSocket disconnected');
       setIsConnected(false);
+      setIsConnecting(false);
+      socketRef.current = null;
     };
 
     socketRef.current = socket;
@@ -50,64 +65,24 @@ const Chat: React.FC<ChatProps> = ({ roomName }) => {
     }
   };
 
-  const sendMessage = () => {
-    if (socketRef.current && input.trim() !== '') {
-      socketRef.current.send(JSON.stringify({ message: input }));
-      setInput('');
-    }
-  };
-
   return (
-    <div className="p-4 border rounded max-w-lg mx-auto">
-      <h2 className="text-lg font-bold mb-2">Chat Room: {roomName}</h2>
-
-      <div className="flex gap-2 mb-4">
-        <button
-          onClick={connectWebSocket}
-          disabled={isConnected}
-          className="bg-green-500 text-white px-4 py-2 rounded disabled:opacity-50"
+    <div className="p-4 max-w-lg mx-auto">
+      <div className="flex gap-2 mb-4 justify-center items-center">
+        <Button 
+          onTap={connectWebSocket} 
+          disabled={isConnected || isConnecting}
         >
-          Connect
-        </button>
-        <button
-          onClick={disconnectWebSocket}
+          {isConnecting ? 'Conectando...' : 'Connect'}
+        </Button>
+        <Button 
+          onTap={disconnectWebSocket} 
           disabled={!isConnected}
-          className="bg-red-500 text-white px-4 py-2 rounded disabled:opacity-50"
         >
           Disconnect
-        </button>
-      </div>
-
-      <div className="h-64 overflow-y-auto border p-2 mb-4 bg-gray-100 rounded">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className="mb-1"
-          >
-            {msg}
-          </div>
-        ))}
-      </div>
-
-      <div className="flex gap-2">
-        <input
-          className="flex-1 p-2 border rounded"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-          placeholder="Type your message..."
-          disabled={!isConnected}
-        />
-        <button
-          onClick={sendMessage}
-          disabled={!isConnected}
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-        >
-          Send
-        </button>
+        </Button>
       </div>
     </div>
   );
 };
 
-export default Chat;
+export default Consumer;

@@ -19,7 +19,7 @@ const Typewriter = ({ words }: { words: { text: string; className?: string }[] }
   });
 
   return (
-    <div className="text-center text-5xl font-bold">
+    <header className="text-center text-5xl font-bold mb-10 mt-10">
       <motion.div
         ref={scope}
         className="inline"
@@ -48,7 +48,7 @@ const Typewriter = ({ words }: { words: { text: string; className?: string }[] }
         transition={{ duration: 0.8, repeat: Infinity, repeatType: 'reverse' }}
         className="ml-1 inline-block h-10 w-1 rounded-sm bg-blue-500"
       ></motion.span>
-    </div>
+    </header>
   );
 };
 

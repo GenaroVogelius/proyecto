@@ -1,10 +1,12 @@
 #!/usr/bin/env sh
 
+# Si no estamos en frontend, salir con éxito
+if [ ! -f "package.json" ]; then
+  exit 0
+fi
+
 # Store the absolute path of the commit message file
 COMMIT_MSG_FILE=$(realpath "$1")
-
-# Change to the frontend directory
-cd frontend
 
 # Run commitlint first
 npx commitlint --edit "$COMMIT_MSG_FILE" || exit 1

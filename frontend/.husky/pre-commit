@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 
-cd frontend
+# Si no estamos en frontend, salir con éxito
+if [ ! -f "package.json" ]; then
+  exit 0
+fi
 
 # Run linting and formatting first
 npm run lint || exit 1
