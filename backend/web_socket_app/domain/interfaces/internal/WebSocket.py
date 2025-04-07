@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class WebsocketInterfaceInternal(AsyncWebsocketConsumer):
     """
-    Internal WebSocket consumer interface following SOLID principles.
+    Internal WebSocket consumer interface.
     Handles the communication between the application and clients.
     """
 
